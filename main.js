@@ -1,5 +1,4 @@
 const TelegramBot = require('node-telegram-bot-api');
-const puppeteer = require('puppeteer');
 
 const token = '7715514174:AAGk4TTEyFHRidw2KxkcYVbcgE9XiR9dHkE';
 const bot = new TelegramBot(token, {polling:true});
@@ -11,11 +10,36 @@ let TimeData;
 let Balance;
 
 let TypeSearch;
-let TypeSearchReply;
-let Predmet;
+let Klass = {
+    klass1:'1 класс',
+    klass2:'2 класс',
+    klass3:'3 класс',
+    klass4:'4 класс',
+    klass5:'5 класс',
+    klass6:'6 класс',
+    klass7:'7 класс',
+    klass8:'8 класс',
+    klass9:'9 класс',
+    klass10:'10 класс',
+    klass11:'11 класс'
+};
+let Predmet = {
+    math:'Математика',
+    algebra:'Алгебра',
+    geometry:'Геометрия',
+    ruslang:'Русский язык',
+    englang:'Английский язык',
+    physics:'Физика'
+};
 let Theme;
-let Variant;
-let NumVariant;
+let Variant = {
+    variant1:'1 вариант',
+    variant2:'2 вариант',
+    variant3:'3 вариант',
+    variant4:'4 вариант',
+    variant5:'5 вариант',
+    variant6:'6 вариант'
+};
 
 // Data
 function SaveData(userId, data) {
@@ -34,6 +58,8 @@ function SaveBalance(userId, data) {
 function GetBalance(userId) {
     return DataBalance.get(userId);
 }
+
+function Search() {}
 
 // Start
 bot.onText(/\/start/, (msg) => {
@@ -92,7 +118,7 @@ bot.onText(/\/account/, (msg) => {
         else if (query.data === 'freebuy') {
             let prices = [{label: 'Добровольное пожертвование', amount: 1}];
 
-            bot.sendInvoice(query.message.chat.id, 'Добровольное пожертвование', 'Для тех, кому не жалко поддержвать проект. Чтобы отправить свою сумму, в следующем сообщении отправьте число, сумму которого хотите пожертвовать', 'freebuy', '', 'XTR', prices, {
+            bot.sendInvoice(query.message.chat.id, 'Добровольное пожертвование', 'Для тех, кому не жалко поддержать проект. Чтобы отправить свою сумму, в следующем сообщении отправьте число, сумму которого хотите пожертвовать', 'freebuy', '', 'XTR', prices, {
                 protect_content: true
             });
 
@@ -122,18 +148,7 @@ console.log('> Successful start');
 // bot.sendInvoice(msg.chat.id, 'Сыщик на 1 месяц', 'Доступ к поиску ответов на 1 месяц', 'search_month', '', 'XTR', prices, {
 // });
 
-
-///////
-///////
-
-
-//let TypeSearch;
-//let TypeSearchReply;
-//let Predmet;
-//let Theme;
-//let Variant;
-//let NumVariant;
-
+//////////
 
 // Search
 bot.onText(/\/test4145/, (msg) => {
@@ -148,6 +163,16 @@ bot.onText(/\/test4145/, (msg) => {
     const button2 = {
         reply_markup: {
             inline_keyboard: [
+                [{text: '1', callback_data: 'klass1'}, {text: '2', callback_data: 'klass2'}, {text: '3', callback_data: 'klass3'}],
+                [{text: '4', callback_data: 'klass4'}, {text: '5', callback_data: 'klass5'}, {text: '6', callback_data: 'klass6'}],
+                [{text: '7', callback_data: 'klass7'}, {text: '8', callback_data: 'klass8'}, {text: '9', callback_data: 'klass9'}],
+                [{text: '10', callback_data: 'klass10'}, {text: '11', callback_data: 'klass11'}]
+            ]
+        }
+    }
+    const button3 = {
+        reply_markup: {
+            inline_keyboard: [
                 [{text: 'Математика', callback_data: 'math'}],
                 [{text: 'Алгебра', callback_data: 'algebra'}],
                 [{text: 'Геометрия', callback_data: 'geometry'}],
@@ -157,113 +182,128 @@ bot.onText(/\/test4145/, (msg) => {
             ]
         }
     };
-    const button3 = {
-        reply_markup: {
-            inline_keyboard: [
-                [{text: '1', callback_data: '1'}, {text: '2', callback_data: '2'}],
-                [{text: '3', callback_data: '3'}, {text: '4', callback_data: '4'}],
-                [{text: '5', callback_data: '5'}, {text: '6', callback_data: '6'}]
-            ]
-        }
-    };
     const button4 = {
         reply_markup: {
             inline_keyboard: [
-                [{text: '1', callback_data: '1'}, {text: '2', callback_data: '2'}],
-                [{text: '3', callback_data: '3'}, {text: '4', callback_data: '4'}],
-                [{text: '5', callback_data: '5'}, {text: '6', callback_data: '6'}]
+                [{text: '1', callback_data: 'variant1'}, {text: '2', callback_data: 'variant2'}],
+                [{text: '3', callback_data: 'variant3'}, {text: '4', callback_data: 'variant4'}],
+                [{text: '5', callback_data: 'variant5'}, {text: '6', callback_data: 'variant6'}],
+                [{text: 'Пропустить', callback_data: 'variant-skip'}]
             ]
         }
     };
+    const button5 = {
+        reply_markup: {
+            inline_keyboard: [
+                [{text: 'Начать поиск', callback_data: 'search-start'}]
+            ]
+        }
+    }
 
     bot.sendMessage(msg.chat.id, `<i><b>Опция: поиск</b></i>\n\n<b>Для того чтобы выбрать конфигурацию, вам потребуется нажмить кнопки под полем ввода. В каждой строке есть несколько кнопок. Каждая строка с кнопками - выбор в конфигурации.</b>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: не указано</code>\n<code>• Предмет: не указано</code>\n\n<b>Для начала выберите:</b>`, {parse_mode:'HTML', reply_markup:button1.reply_markup})
         .then((sentMessage) => TimeData = sentMessage.message_id);
-            // else if (query.data === "text" || query.data === "photo") {
-            //     TypeSearchReply = query.data === "text" ? "текст" : "фото";
-        
-            //     bot.editMessageText(
-            //         `<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Тип поиска ответов: ${TypeSearchReply}</code>\n<code>• Предмет: ${Subject}</code>\n\n<b>Выберите предмет:</b>`,
-            //         { parse_mode: "HTML", chat_id: chatId, message_id: TimeData, reply_markup: button3.reply_markup }
-            //     );
-        
-            //     bot.answerCallbackQuery(query.id);
-            // } else if (["math", "algebra", "geometry", "russlang", "englang", "physics"].includes(query.data)) {
-            //     Subject = {
-            //         math: "Математика",
-            //         algebra: "Алгебра",
-            //         geometry: "Геометрия",
-            //         russlang: "Русский язык",
-            //         englang: "Английский язык",
-            //         physics: "Физика"
-            //     }[query.data];
-        
-            //     bot.editMessageText(
-            //         `<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Тип поиска ответов: ${TypeSearchReply}</code>\n<code>• Предмет: ${Subject}</code>\n\n<b>Выберите номер задания:</b>`,
-            //         { parse_mode: "HTML", chat_id: chatId, message_id: TimeData, reply_markup: button4.reply_markup }
-            //     );
-        
-            //     bot.answerCallbackQuery(query.id);
-            // } else if (["1", "2", "3", "4", "5", "6"].includes(query.data)) {
-            //     bot.editMessageText(
-            //         `<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Тип поиска ответов: ${TypeSearchReply}</code>\n<code>• Предмет: ${Subject}</code>\n<code>• Номер задания: ${query.data}</code>\n\n✅ <b>Настройки завершены!</b>`,
-            //         { parse_mode: "HTML", chat_id: chatId, message_id: TimeData }
-            //     );
-        
-            //     bot.answerCallbackQuery(query.id);
-            // } else {
-            //     bot.answerCallbackQuery(query.id, { text: "Ошибка! Неверная кнопка.", show_alert: true });
-            // }
-        // });
-// });
 
     bot.on("callback_query", (query) => {
         // Type search
         if (query.data === "typesearch-kontrolnaya") {
             TypeSearch = "контрольная работа";
 
-            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Предмет: не указано</code>\n<code>• Тема: не указано</code>\n<code>• Количество вариантов (необязательно): не указано</code>\n<code>• Сколько вариантов прислать?: не указано</code>\n\n<b>Выберите тип ответа:</b>`, {
+            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Класс: не указано</code>\n<code>• Предмет: не указано</code>\n<code>• Тема: не указано</code>\n<code>• Вариант (необязательно): не указано</code>\n\n<b>Выберите тип ответа:</b>`, {
                 parse_mode:'HTML',
                 chat_id:query.message.chat.id,
                 message_id:TimeData,
                 reply_markup:button2.reply_markup
             });
-        }
-        else if (query.data === "typesearch-gdz") {
-            TypeSearch = "гдз";
 
-            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Предмет: не указано</code>\n<code>• Номер задания: не указано</code>\n<code>• Сколько решений прислать?: не указано</code>\n\n<b>Выберите тип ответа:</b>`, {
-                parse_mode:'HTML',
-                chat_id:query.message.chat.id,
-                message_id:TimeData,
-                reply_markup:button2.reply_markup
-            });
+            bot.answerCallbackQuery(query.id);
         }
 
-        // Predmet
-        else if (query.data === "math") {
-            TypeSearch = "математика";
+        // Klass
+        else if (Klass[query.data]) {
+            Klass = Klass[query.data];
 
-            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Предмет: не указано</code>\n<code>• Номер задания: не указано</code>\n<code>• Сколько решений прислать?: не указано</code>\n\n<b>Выберите тип ответа:</b>`, {
+            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Класс: ${Klass}</code>\n<code>• Предмет: не указано</code>\n<code>• Тема: не указано</code>\n<code>• Вариант (необязательно): не указано</code>\n\n<b>Выберите тип ответа:</b>`, {
                 parse_mode:'HTML',
                 chat_id:query.message.chat.id,
                 message_id:TimeData,
                 reply_markup:button3.reply_markup
             });
+
+            bot.answerCallbackQuery(query.id);
         }
+
+        // Predmet
+        else if (Predmet[query.data]) {
+            Predmet = Predmet[query.data];
+
+            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Класс: ${Klass}</code>\n<code>• Предмет: ${Predmet}</code>\n<code>• Тема: не указано</code>\n<code>• Вариант (необязательно): не указано</code>\n\n<b>В своём следующем сообщении напишите тему:</b>`, {
+                parse_mode:'HTML',
+                chat_id:query.message.chat.id,
+                message_id:TimeData,
+            });
+
+            bot.on('message', (msg) => {
+                Theme = msg.text;
+
+                bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Класс: ${Klass}</code>\n<code>• Предмет: ${Predmet}</code>\n<code>• Тема: ${Theme}</code>\n<code>• Вариант (необязательно): не указано</code>\n\n<b>Выберите тип овтета:</b>`, {
+                    parse_mode:'HTML',
+                    chat_id:query.message.chat.id,
+                    message_id:TimeData,
+                    reply_markup:button4.reply_markup
+                });
+            });
+
+            bot.answerCallbackQuery(query.id);
+        }
+
+        // Variant (Контрольная)
+        else if (Variant[query.data]) {
+            Variant = Variant[query.data];
+
+            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: ${TypeSearch}</code>\n<code>• Класс: ${Klass}</code>\n<code>• Предмет: ${Predmet}</code>\n<code>• Тема: ${Theme}</code>\n<code>• Вариант (необязательно): ${Variant}</code>\n\n<b>Конфигурация успешно создана!\nДля начала поиска нажмите кнопку:</b>`, {
+                parse_mode:'HTML',
+                chat_id:query.message.chat.id,
+                message_id:TimeData,
+                reply_markup:button5.reply_markup
+            });
+
+            bot.answerCallbackQuery(query.id);
+        }
+
+        else if (query.data === "variant-skip") {
+            Variant = "";
+
+            bot.editMessageText(`<i><b>Опция: поиск</b></i>\n\n<b>Конфигурация:</b>\n<code>• Тип поиска: не указано</code>\n\n<b>Конфигурация успешно создана!\nДля начала поиска нажмите кнопку:</b>`, {
+                parse_mode:'HTML',
+                chat_id:query.message.chat.id,
+                message_id:TimeData,
+                reply_markup:button5.reply_markup
+            });
+
+            bot.answerCallbackQuery(query.id);
+        }
+
+        // Start
+        else if (query.data === "search-start") {}
     });
 });
 
-// Control
+
+
+// ГДЗ
 
 //let TypeSearch;
+//let Klass;
 //let Predmet;
-//let Theme;
-//let Variant;
-//let NumVariant;
-
-// Gdz
-
-//let TypeSearch;
-//let Predmet;
+//let Author;
 //let Task;
-//let TaskNum;
+
+{/* <i><b>Опция: поиск</b></i>\n\n
+<b>Конфигурация:</b>\n
+<code>• Тип поиска: ${TypeSearch}</code>\n
+<code>• Класс: не указано</code>\n
+<code>• Предмет: не указано</code>\n
+<code>• Автор учебника: не указано</code>\n
+<code>• Номер задания: не указано</code>\n
+<code>• Сколько решений прислать?: не указано</code>\n\n
+<b>Выберите тип ответа:</b> */}
